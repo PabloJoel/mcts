@@ -1,6 +1,7 @@
 import pygame
 from option_box import OptionBox
 import InputBox as ib
+import Button as bt
 
 pygame.init()
 pygame.font.init()
@@ -38,6 +39,9 @@ input_box1 = ib.InputBox(size_screen/2, size_screen/2.2, size_screen*0.1, size_s
 input_box2 = ib.InputBox(size_screen/2, size_screen/1.51, size_screen*0.1, size_screen*0.053, '100')
 input_boxes = [input_box1, input_box2]
 
+#Button to start
+start_button = bt.Button('Start',20,20,size_screen*0.1,size_screen*0.053,font_game,(77,106,149),'green')
+
 #Main loop
 running = True
 while running:
@@ -48,6 +52,8 @@ while running:
             running = False
         for box in input_boxes: #Events for input box
             box.handle_event(event)
+        if start_button.mouse_click(event):
+            print('Click')
 
     #Change player 1 chosen
     chosen_player = list1.update(events)
@@ -66,6 +72,9 @@ while running:
     list1.draw(screen)
     list2.draw(screen)
 
+    #Draw the button again
+    start_button.draw(screen)
+
     #Checkers title
     label = font_game.render("Checkers", 1, (77,106,149))
     screen.blit(label, (size_screen/2.5, size_screen/5))
@@ -82,7 +91,7 @@ while running:
     for box in input_boxes:
         box.update()
 
-    #If MCTS Player is chosen the display the in`put box for the number of iterations
+    #If MCTS Player is chosen the display the input box for the number of iterations
     if player1 == 2:
         input_box1.draw(screen)
 
