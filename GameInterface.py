@@ -2,9 +2,6 @@ import abc
 
 class GameInterface( abc.ABC ):
     @abc.abstractclassmethod
-    
-    def generateBoard(self):
-        pass
 
     def generateMoves(self):
         pass

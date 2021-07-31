@@ -1,14 +1,19 @@
+from TicUCT import TicUCT
 from BTree import BTree
 from PlayerInterface import PlayerInterface
 from UCT import UCT
+from TicUCT import TicUCT
 import time
 
 class UCTPlayer(PlayerInterface):
 
-    def __init__(self, game, iter=100, choose='max_value', heurs=False):
+    def __init__(self, game, type_game='checkers', iter=100, choose='max_value', heurs=False):
         self.iter = iter
         self.choose = choose
-        self.uct = UCT(game)
+        if type_game == 'checkers':
+            self.uct = UCT(game)
+        elif type_game == 'tic':
+            self.uct = TicUCT(game)
         self.heurs = heurs
 
     def chooseMove(self, enemy_move):
@@ -17,14 +22,14 @@ class UCTPlayer(PlayerInterface):
         start = time.time()
 
         #Update according to the enemy move
-        if not(enemy_move.black_tiles == self.uct.tree.game.black_tiles and enemy_move.white_tiles == self.uct.tree.game.white_tiles):
+        if not(enemy_move.same_board(self.uct.tree.game)):
             if not self.uct.tree.nodes:
                 self.uct.tree = BTree(game=enemy_move, parent=None)
             else:
                 find = False
                 i = 0
                 while(not find):
-                    if (enemy_move.black_tiles == self.uct.tree.nodes[i].game.black_tiles and enemy_move.white_tiles == self.uct.tree.nodes[i].game.white_tiles):
+                    if (enemy_move.same_board(self.uct.tree.nodes[i].game)):
                         self.uct.tree = self.uct.tree.nodes[i]
                         self.uct.tree.parent = None
                         find = True

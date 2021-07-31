@@ -53,7 +53,8 @@ class UCT():
 
     def simulation(node, heurs): 
         winner = UCT.__play(node.game,heurs)
-
+        return winner
+        """
         if (node.game.next_player and winner == 'White'
             ) or (not node.game.next_player and winner == 'Black'):
             return 1
@@ -61,7 +62,8 @@ class UCT():
             return 0
         else:
             return -1
-    
+        """
+
     def __play(game, heurs):
         current_game = copy.deepcopy(game)
         turn1 = current_game.next_player
@@ -115,18 +117,24 @@ class UCT():
 
     def backpropagation(node, value):
         node.visits += 1
-        node.value += value
+        if value == 'Black' and node.game.next_player == False:
+            node.value += 1
+        elif value == 'White'  and node.game.next_player == True:
+            node.value += 1
+        elif value == 'Draw':
+            node.value += 0.25
 
+        #node.value += value
         if node.parent is not None:
             UCT.backpropagation(node.parent, value)
 
-    def UCB1(node, expl_const=2):
+    def UCB1(node, expl_const=(1/(np.sqrt(2)))):
         """Basic UCB1 function
         """
         if node.visits == 0:
             return float('inf')
         else:
-            exploitation = node.value
+            exploitation = (node.value/node.visits)
 
             inside_square_root = (2*(np.log(node.parent.visits)))/node.visits 
             exploration  = 2*expl_const*(np.sqrt(inside_square_root))

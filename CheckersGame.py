@@ -311,6 +311,12 @@ class CheckersGame(GameInterface):
             return True
         else:
             return False
+    
+    def same_board(self, other):
+        if self.black_tiles == other.black_tiles and self.white_tiles == other.white_tiles:
+            return True
+        else:
+            return False
 
     def __hash__(self):
         return hash( (hash(tuple(self.black_tiles)), tuple(self.white_tiles), hash(self.next_player)) )
@@ -330,6 +336,14 @@ class CheckersGame(GameInterface):
             else:
                 eval += mult*(1.5)
 
+            """
+            if not self.black_tiles.get(tile):
+                if tile[0] > 2:
+                    dif = tile[0]-5
+                    eval += mult*(dif*0.2)
+            """
+
+
         mult *= -1
         for tile in self.white_tiles:
             #Queen or peon
@@ -337,6 +351,12 @@ class CheckersGame(GameInterface):
                 eval += mult*(3)
             else:
                 eval += mult*(1.5)
+            """
+            if not self.black_tiles.get(tile):
+                if tile[0] > 2:
+                    dif = 7-tile[0]-2
+                    eval += mult*(dif*0.2)
+             """
         
         return eval
             

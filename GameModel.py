@@ -105,13 +105,16 @@ white = 0
 black = 0
 draw = 0
 i = 0
-mcts_iter = 100
-heur = False
+mcts_iter1 = 100
+heur1 = False
+
+mcts_iter2 = 100
+heur2 = True
 
 while(i<100):
     gm = GameModel(CheckersGame())
-    winner = gm.play(player1=RandomPlayer(show=False), player2=UCTPlayer(game=CheckersGame(),iter=mcts_iter,heurs=heur), show=False)
-    print(f'Winner:{winner}, Current game: {i}, Heur: {heur}, MCTS iter: {mcts_iter}')
+    winner = gm.play(player1=UCTPlayer(game=CheckersGame(),iter=mcts_iter1,heurs=heur1), player2=UCTPlayer(game=CheckersGame(),iter=mcts_iter2,heurs=heur2), show=False)
+    print(f'Winner:{winner}, Current game: {i}, MCTS iter1: {mcts_iter1}, Heur1: {heur1}, MCTS iter2: {mcts_iter2}, Heur2: {heur2}')
     if winner == 'Black':
         black += 1
     elif winner == 'White':
