@@ -14,7 +14,7 @@ class Button:
  
     def draw(self, screen):
         screen.blit(self.text, (self.x, self.y))
-        pygame.draw.rect(screen, self.color, self.rect, 2)
+        pygame.draw.rect(screen, self.background_color, self.rect, 2)
  
     def mouse_click(self, event):
         """ checks if you click the mouse button and then if it's on the button """
