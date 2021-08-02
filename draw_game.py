@@ -1,24 +1,18 @@
 import pygame
 from draw_board import draw_board
+from draw_moves import draw_moves
 from CheckersGame import CheckersGame
 
-pygame.init()
-pygame.font.init()
+def draw_game(screen, size_screen, game, msg=None, moves=None):
+    pygame.init()
+    pygame.font.init()
 
-#caption
-pygame.display.set_caption("Checkers Game")
+    #caption
+    pygame.display.set_caption("Checkers Game")
 
-#beginning of logic
-gameExit = False
+    #Draw board
+    draw_board(screen, size_screen, game, msg)
 
-#Draw board 
-draw_board(CheckersGame())
+    draw_moves(screen, size_screen, game, moves)
 
-while not gameExit:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            gameExit = True
-
-#quit from pygame & python
-pygame.quit()
-quit()
+    
