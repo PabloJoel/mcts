@@ -62,6 +62,6 @@ def draw_board(screen, size_screen, game, msg):
     else:
         label = myfont.render("White Player's Turn", False, (0,0,0))
 
-    screen.blit(label, (size_screen/2 - size_screen/12, tile_size/3))
+    screen.blit(label, (size_screen/2.7, tile_size/3))
 
     pygame.display.update()

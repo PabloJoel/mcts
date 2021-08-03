@@ -1,5 +1,6 @@
 #import utilities
 import time
+import pygame
 import draw_game as dg
 import UCTPlayer as up
 import HumanPlayer as hp
@@ -7,6 +8,8 @@ import HumanPlayer as hp
 def play(screen, screen_size, game, player1, player2):
     """ Play the game
     """
+    pygame.init()
+
     current_game = game
     turn1 = current_game.next_player
     all_moves = dict()
@@ -15,7 +18,13 @@ def play(screen, screen_size, game, player1, player2):
 
     running = True
     while(running):
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT:
+                running = False
+                
         msg = None
+        print('Hola')
 
         if turn1:
             player_color = 'Black'
@@ -50,7 +59,7 @@ def play(screen, screen_size, game, player1, player2):
             dif = end - start
             if dif < 3:
                 time.sleep(3-dif)
-            
+
             #Repeat position
             if current_game in all_moves:
                 all_moves[current_game] += 1
@@ -68,8 +77,7 @@ def play(screen, screen_size, game, player1, player2):
                 running = False
             
             current_game = chosen
-            dg.draw_game(screen, screen_size, game=game, msg=msg)
-
+            dg.draw_game(screen, screen_size, game=current_game, msg=msg)
             turn1 = current_game.next_player
     
 
