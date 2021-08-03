@@ -48,7 +48,7 @@ def draw_board(screen, size_screen, game, msg):
                     else:
                         screen.blit(red,((size*(col+1))+2.5,(size*(7-row+1))+2.5))#col,row
                 elif position in game.white_tiles:
-                    if game.black_tiles.get(position):
+                    if game.white_tiles.get(position):
                         screen.blit(white_queen,((size*(col+1))+2.5,(size*(7-row+1))+2.5))#col,row
                     else:
                         screen.blit(white,((size*(col+1))+2.5,(size*(7-row+1))+2.5))#col,row
