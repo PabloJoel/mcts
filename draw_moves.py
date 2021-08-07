@@ -1,3 +1,4 @@
+from select_game import select_game
 import pygame
 
 def draw_moves(screen, screen_size, game, moves):
@@ -16,8 +17,9 @@ def draw_moves(screen, screen_size, game, moves):
 
             for tile in next_tiles:
                 if not (tile in current_tiles):
-                    col = (50*tile[1])+50+2.5
-                    row = (50*(tile[0]+1))+50+2.5
+                    col = (tile[1]+1)*(screen_size/10)
+                    row = (7-tile[0]+1)*(screen_size/10)
+
                     mark = create_yellow(screen_size)
                     rect = screen.blit(mark,(col,row))#col,row
                     if tuple(rect) in yellow_marks:
@@ -36,18 +38,21 @@ def draw_moves(screen, screen_size, game, moves):
             for event in events:
                 if event.type == pygame.QUIT:
                     running = False
+                    pygame.quit()
+                    quit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     x, y = event.pos
                     for rect in yellow_marks:
                         aux_rect = pygame.Rect((rect[0], rect[1]),(rect[2], rect[3]))
                         if aux_rect.collidepoint(x,y):
-                            print(f'clicked on image: ')
-                            for game in yellow_marks[rect]:
-                                print(rect,game)
+                            if len(yellow_marks[rect]) == 1:
+                                return yellow_marks[rect][0]
+                            else:
+                                return select_game(screen, screen_size, yellow_marks[rect])
                                 
 
 def create_yellow(screen_size):
-    tile_size = int((screen_size/10)-2.5)
+    tile_size = int(screen_size/10)
     yellow = pygame.image.load("yellow_mark.png")
     yellow = pygame.transform.scale(yellow, (tile_size, tile_size))
     return yellow

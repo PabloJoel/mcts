@@ -121,9 +121,8 @@ def create_player(player1, iter1, player2, iter2):
 
         if player2 == 0:
             pl2 = hp.HumanPlayer()
-        elif player1 == 1:
+        elif player2 == 1:
             pl2 = rp.RandomPlayer(show=False)
-        elif player1 == 2:
+        elif player2 == 2:
             pl2 = up.UCTPlayer(game=cg.CheckersGame(), type_game='checkers', iter=iter2)
-
         return (pl1,pl2)

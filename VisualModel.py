@@ -24,41 +24,37 @@ def play(screen, screen_size, game, player1, player2):
                 running = False
                 
         msg = None
-        print('Hola')
 
         if turn1:
-            player_color = 'Black'
+            next_player_color = 'White'
         else:
-            player_color = 'White'
+            next_player_color = 'Black'
 
         moves = current_game.generateMoves()
         
         if not moves:
             running = False
-            msg = f'{player_color} has lost'
+            msg = f'{next_player_color} has won'
             dg.draw_game(screen, screen_size, current_game, msg) 
         else:
             if (turn1 and isinstance(player1, hp.HumanPlayer)) or (not turn1 and isinstance(player2, hp.HumanPlayer)):
                 chosen = dg.draw_game(screen, screen_size, game=current_game, moves=moves)
             else:
-                chosen = dg.draw_game(screen, screen_size, game=current_game, moves=moves)
-            
-            start = time.time()
-            if turn1:
-                if isinstance(player1, up.UCTPlayer):
-                    chosen = player1.chooseMove(current_game)
-                elif not isinstance(player1, hp.HumanPlayer):
-                    chosen = player1.chooseMove(moves)
-            else:
-                if isinstance(player2, up.UCTPlayer):
-                    chosen = player2.chooseMove(current_game)
-                elif not isinstance(player2, hp.HumanPlayer):
-                    chosen = player2.chooseMove(moves)
-            end = time.time()
-
-            dif = end - start
-            if dif < 3:
-                time.sleep(3-dif)
+                start = time.time()
+                if turn1:
+                    if isinstance(player1, up.UCTPlayer):
+                        chosen = player1.chooseMove(current_game)
+                    elif not isinstance(player1, hp.HumanPlayer):
+                        chosen = player1.chooseMove(moves)
+                else:
+                    if isinstance(player2, up.UCTPlayer):
+                        chosen = player2.chooseMove(current_game)
+                    elif not isinstance(player2, hp.HumanPlayer):
+                        chosen = player2.chooseMove(moves)
+                end = time.time()
+                dif = end-start
+                if dif < 1:
+                    time.sleep(1-dif)
 
             #Repeat position
             if current_game in all_moves:
@@ -79,5 +75,6 @@ def play(screen, screen_size, game, player1, player2):
             current_game = chosen
             dg.draw_game(screen, screen_size, game=current_game, msg=msg)
             turn1 = current_game.next_player
+    time.sleep(3)
     
 

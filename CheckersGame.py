@@ -293,16 +293,21 @@ class CheckersGame(GameInterface):
     def is_finished(self):
         # Draw because of definition 1.32.2
         if self.cond1 > 40 and self.cond2 > 40:
-            return True
+            return (True,0)
 
         #One player has lost
-        if not self.black_tiles or not self.white_tiles:
-            return True
+        if not self.black_tiles:
+            return (True,False)
+        elif not self.white_tiles:
+            return (True,True)
 
         if not self.generateMoves():
-            return True
+            if self.next_player:
+                return (True,True)
+            else:
+                return (True,False)
 
-        return False
+        return (False,-1)
 
     def __eq__(self, other):
         """Equals function to compare two CheckersGame to know if they are the same game

@@ -7,7 +7,7 @@ pygame.init()
 pygame.font.init()
 
 #Screen creation
-size_screen = 500
+size_screen = 700
 screen = pygame.display.set_mode((size_screen,size_screen))
 
 #Main loop

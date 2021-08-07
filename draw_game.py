@@ -13,6 +13,6 @@ def draw_game(screen, size_screen, game, msg=None, moves=None):
     #Draw board
     draw_board(screen, size_screen, game, msg)
 
-    draw_moves(screen, size_screen, game, moves)
+    return draw_moves(screen, size_screen, game, moves)
 
     

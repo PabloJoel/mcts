@@ -19,6 +19,19 @@ class UCT():
         for new_game in movs:
             tree.nodes.append(BTree(game=new_game, parent=tree))
 
+        if len(movs)==1:
+            return tree
+
+        for node in tree.nodes:
+            finish, winner = node.game.is_finished()
+            if finish and winner == tree.game.next_player: #Winning move
+                new_nodes = list()
+                new_nodes.append(node)
+                tree.nodes = new_nodes
+                return tree
+            elif finish and winner != 0: #Losing move
+                node.value = float('-inf')
+
         iter = 0
         while(iter < max_iter):
             selected_node = UCT.selection(tree)
@@ -29,7 +42,7 @@ class UCT():
         return tree
 
     def selection(node):
-        if node.game.is_finished():
+        if node.game.is_finished()[0]:
             return node
         else:
             if not node.nodes: #Leaf node
@@ -38,31 +51,30 @@ class UCT():
                     movs = node.game.generateMoves()
                     for new_game in movs:
                         node.nodes.append(BTree(game=new_game, parent=node))
-                    return node.nodes[0]
+                    
+                    chosen = random.randint(0,len(node.nodes)-1)
+                    return node.nodes[chosen]
                 else: #Non visited node
                     return node
             else: #Non leaf node
-                best_node = node.nodes[0]
+                best_nodes = list() 
+                best_nodes.append(node.nodes[0])
+
                 best_ucb = UCT.UCB1(node.nodes[0])
                 for subnode in node.nodes[1:]:
                     ucb = UCT.UCB1(subnode)
-                    if ucb > best_ucb:
+                    if ucb == best_ucb:
+                        best_nodes.append(subnode)
+                    elif ucb > best_ucb:
+                        best_nodes = list()
+                        best_nodes.append(subnode)
                         best_ucb = ucb
-                        best_node = subnode
-                return UCT.selection(best_node)
+                chosen = random.randint(0,len(best_nodes)-1)
+                return UCT.selection(best_nodes[chosen])
 
     def simulation(node, heurs): 
         winner = UCT.__play(node.game,heurs)
         return winner
-        """
-        if (node.game.next_player and winner == 'White'
-            ) or (not node.game.next_player and winner == 'Black'):
-            return 1
-        elif winner == 'Draw':
-            return 0
-        else:
-            return -1
-        """
 
     def __play(game, heurs):
         current_game = copy.deepcopy(game)

@@ -1,3 +1,4 @@
+import random
 from TicUCT import TicUCT
 from BTree import BTree
 from PlayerInterface import PlayerInterface
@@ -42,21 +43,32 @@ class UCTPlayer(PlayerInterface):
         #Choose new move
         if self.choose == 'max_value':
             best_value = UCT.UCB1(self.uct.tree.nodes[0])
-            best_node = self.uct.tree.nodes[0]
+            best_nodes = list()
+            best_nodes.append(self.uct.tree.nodes[0])
+
             for node in self.uct.tree.nodes:
                 value = UCT.UCB1(node)
-                if value > best_value:
-                    best_node = node
+                if value == best_value:
+                    best_nodes.append(node)
+                elif value > best_value:
+                    best_nodes = list()
+                    best_nodes.append(node)
                     best_value = value
         elif self.choose == 'most_visited':
             best_visits = self.uct.tree.nodes[0].visits
-            best_node = self.uct.tree.nodes[0]
+            best_nodes = list()
+            best_nodes.append(self.uct.tree.nodes[0])
+
             for node in self.uct.tree.nodes:
-                if node.visits > best_visits:
-                    best_node = node
+                if node.visits == best_visits:
+                    best_nodes.append(node)
+                elif node.visits > best_visits:
+                    best_node = list()
+                    best_node.append(node)
                     best_visits = node.visits
 
-        self.uct.tree = best_node
+        chosen = random.randint(0,len(best_nodes)-1)
+        self.uct.tree = best_nodes[chosen]
         self.uct.tree.parent = None
 
         end = time.time()

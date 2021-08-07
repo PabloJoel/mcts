@@ -20,9 +20,7 @@ def draw_board(screen, size_screen, game, msg):
             else:
                 pygame.draw.rect(screen, green, [size*z,size*i,size,size])
             cnt +=1
-        #since theres an even number of squares go back one value
-        cnt-=1
-    #Add a nice boarder
+        cnt += 1
     pygame.draw.rect(screen,green,[size,size,boardLength*size,boardLength*size],1)
 
     #Draw tiles
