@@ -8,11 +8,12 @@ import time
 
 class UCTPlayer(PlayerInterface):
 
-    def __init__(self, game, type_game='checkers', iter=100, choose='max_value', heurs=False):
+    def __init__(self, player, game, type_game='checkers', iter=100, choose='max_value', heurs=False):
+        self.player = player
         self.iter = iter
         self.choose = choose
         if type_game == 'checkers':
-            self.uct = UCT(game)
+            self.uct = UCT(game,player)
         elif type_game == 'tic':
             self.uct = TicUCT(game)
         self.heurs = heurs

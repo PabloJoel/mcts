@@ -5,7 +5,7 @@ from GameInterface import GameInterface
 
 class CheckersGame(GameInterface):
     
-    def __init__(self, black_tiles=None, white_tiles=None, next_player=True, matrix=None, cond1=0, cond2=0):
+    def __init__(self, black_tiles=None, white_tiles=None, next_player=True, matrix=None, cond1=0, cond2=0, mov=None):
         """Constructor: it can take the parameters to create an specific board (black tiles and white tiles) or a numpy matrix
             (the board) or no parameters to create the default board
         """
@@ -38,6 +38,7 @@ class CheckersGame(GameInterface):
         self.next_player = next_player
         self.cond1 = cond1 #First condition for draw: neither player has advanced an uncrowned piece towards the king-row in 40 moves
         self.cond2 = cond2 #Second condition for draw: no pieces had been eaten in 40 moves
+        self.mov = mov
 
     def generateBoard(self):
         """Generate the board in 2 parts, the black and the white tiles
@@ -194,7 +195,10 @@ class CheckersGame(GameInterface):
                 if queen: #Transformation into a queen, recursive search stops
                     extended_moves = list()
                 else:
+                    origin = move[0].mov
                     extended_moves = move[0].__generateJumpMoves1Tile(move[1], rank)
+                    for ext_mov in extended_moves:
+                        ext_mov.mov = (origin[0],ext_mov.mov[1])
 
                 if not extended_moves:
                     #empty list, no more movements or queen transformation
@@ -285,10 +289,11 @@ class CheckersGame(GameInterface):
         else:
             next_color = color
 
+        mov = (7*current_position[0]+current_position[0]+current_position[1], 7*final_position[0]+final_position[0]+final_position[1])
         if color:
-            return CheckersGame(team_copy, enemy_copy, next_color)
+            return CheckersGame(black_tiles=team_copy, white_tiles=enemy_copy, next_player=next_color, mov=mov)
         else:
-            return CheckersGame(enemy_copy, team_copy, next_color)
+            return CheckersGame(black_tiles=enemy_copy, white_tiles=team_copy, next_player=next_color, mov=mov)
 
     def is_finished(self):
         # Draw because of definition 1.32.2
@@ -328,43 +333,110 @@ class CheckersGame(GameInterface):
 
     def heuristic_eval(self):
         eval = 0
+        numb_pawns = 0
+        numb_queens = 0
+        numb_pieces_back = 0 
+        numb_pieces_middle_rows_cols = 0
+        numb_pieces_middle_rows = 0
+        numb_endangered_pieces = 0
+        numb_protected_pieces = 0
+
+        #if self.next_player:
+            #mult = -1
+        #else:
+            #mult = 1
 
         if self.next_player:
-            mult = -1
+            my_pieces = self.white_tiles
+            enemy_pieces = self.black_tiles
+            back_row = 7
         else:
-            mult = 1
-
-        for tile in self.black_tiles:
-            #Queen or peon
-            if self.black_tiles.get(tile):
-                eval += mult*(3)
-            else:
-                eval += mult*(1.5)
-
-            """
-            if not self.black_tiles.get(tile):
-                if tile[0] > 2:
-                    dif = tile[0]-5
-                    eval += mult*(dif*0.2)
-            """
-
-
-        mult *= -1
-        for tile in self.white_tiles:
-            #Queen or peon
-            if self.white_tiles.get(tile):
-                eval += mult*(3)
-            else:
-                eval += mult*(1.5)
-            """
-            if not self.black_tiles.get(tile):
-                if tile[0] > 2:
-                    dif = 7-tile[0]-2
-                    eval += mult*(dif*0.2)
-             """
+            my_pieces = self.black_tiles
+            enemy_pieces = self.white_tiles
+            back_row = 0
         
+        for posit, value in my_pieces.items():
+            if value:
+                numb_queens += 1
+            else:
+                numb_pawns += 1
+
+            if posit[0] == back_row:
+                numb_pieces_back += 1
+
+            if posit[0] > 2 and posit[0] < 5:
+                if posit[1] > 1 and posit[1] < 6:
+                    numb_pieces_middle_rows_cols += 1
+                else:
+                   numb_pieces_middle_rows += 1 
+            
+            left_up = (posit[0]+1, posit[1]-1)
+            right_up = (posit[0]+1, posit[1]+1)
+            left_down = (posit[0]-1, posit[1]-1)
+            right_down = (posit[0]-1, posit[1]+1)
+
+            if self.next_player: #im white
+                if left_down in enemy_pieces:
+                    if CheckersGame.__endangered_piece(right_up, enemy_pieces, my_pieces):
+                        numb_endangered_pieces += 1
+                    else:
+                        numb_protected_pieces += 1
+
+                if right_down in enemy_pieces:
+                    if CheckersGame.__endangered_piece(left_up, enemy_pieces, my_pieces):
+                        numb_endangered_pieces += 1
+                    else:
+                        numb_protected_pieces += 1
+
+                if left_up in enemy_pieces and enemy_pieces.get(left_up):
+                    if CheckersGame.__endangered_piece(right_down, enemy_pieces, my_pieces):
+                        numb_endangered_pieces += 1
+                    else:
+                        numb_protected_pieces += 1
+
+                if right_up in enemy_pieces and enemy_pieces.get(right_up):
+                    if CheckersGame.__endangered_piece(left_down, enemy_pieces, my_pieces):
+                        numb_endangered_pieces += 1
+                    else:
+                        numb_protected_pieces += 1
+            else:
+                if left_down in enemy_pieces and enemy_pieces.get(left_down):
+                    if CheckersGame.__endangered_piece(right_up, enemy_pieces, my_pieces):
+                        numb_endangered_pieces += 1
+                    else:
+                        numb_protected_pieces += 1
+
+                if right_down in enemy_pieces and enemy_pieces.get(right_down):
+                    if CheckersGame.__endangered_piece(left_up, enemy_pieces, my_pieces):
+                        numb_endangered_pieces += 1
+                    else:
+                        numb_protected_pieces += 1
+
+                if left_up in enemy_pieces:
+                    if CheckersGame.__endangered_piece(right_down, enemy_pieces, my_pieces):
+                        numb_endangered_pieces += 1
+                    else:
+                        numb_protected_pieces += 1
+
+                if right_up in enemy_pieces:
+                    if CheckersGame.__endangered_piece(left_down, enemy_pieces, my_pieces):
+                        numb_endangered_pieces += 1
+                    else:
+                        numb_protected_pieces += 1
+
+        eval = (5*(numb_pawns) + 7.75*(numb_queens) + 4*(numb_pieces_back)
+                + 2.5*(numb_pieces_middle_rows_cols) + 0.5*(numb_pieces_middle_rows) 
+                - 3*(numb_endangered_pieces) + 3*(numb_protected_pieces))
+        #print(f'Turn:{self.next_player}, Pawns:{numb_pawns}, Queens:{numb_queens}, Back:{numb_pieces_back}, Great_middle:{numb_pieces_middle_rows_cols}, Lesser_middle:{numb_pieces_middle_rows}, Dangered:{numb_endangered_pieces}, Secured:{numb_protected_pieces}, Total:{eval}')
+        #mult *= -1
         return eval
             
+    def __endangered_piece(enemy, enemy_pieces, my_pieces):
+        if (enemy[0] >= 0 and enemy[0] <= 7 and enemy[1] >= 0 and enemy[1] <= 7) and not(enemy in enemy_pieces or enemy in my_pieces):
+            return True
+        else:
+            return False
+
 
     def __str__(self):
         """To string function of the board

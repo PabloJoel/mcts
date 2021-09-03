@@ -3,13 +3,16 @@ import random
 import copy
 import numpy as np
 
+import CheckersGame as cg
 #Tree
 from BTree import BTree
 
 class UCT():
 
-    def __init__(self, game):
+    def __init__(self, game, player):
+        self.player = player
         self.tree = BTree(game=game, parent=None)
+        self.good_replies = dict()
         
     def search(self, heurs, max_iter=100):
         tree = copy.deepcopy(self.tree)
@@ -34,14 +37,14 @@ class UCT():
 
         iter = 0
         while(iter < max_iter):
-            selected_node = UCT.selection(tree)
-            sim_value = UCT.simulation(selected_node, heurs)
+            selected_node = self.selection(tree)
+            sim_value = self.simulation(selected_node, heurs)
             UCT.backpropagation(selected_node, sim_value)
             iter += 1
 
         return tree
 
-    def selection(node):
+    def selection(self, node):
         if node.game.is_finished()[0]:
             return node
         else:
@@ -52,8 +55,22 @@ class UCT():
                     for new_game in movs:
                         node.nodes.append(BTree(game=new_game, parent=node))
                     
-                    chosen = random.randint(0,len(node.nodes)-1)
-                    return node.nodes[chosen]
+                    #LGR POLICY
+                    if node.game.mov in self.good_replies:
+                        good_replies = list()
+                        for subnode in node.nodes:
+                            if self.good_replies[node.game.mov] == subnode.game.mov:
+                                good_replies.append(subnode)
+                        
+                        if not good_replies:
+                            chosen = random.randint(0,len(node.nodes)-1)
+                            return node.nodes[chosen]
+                        else:
+                            chosen = random.randint(0,len(good_replies)-1)
+                            return good_replies[chosen]  
+                    else:    
+                        chosen = random.randint(0,len(node.nodes)-1)
+                        return node.nodes[chosen]
                 else: #Non visited node
                     return node
             else: #Non leaf node
@@ -69,18 +86,35 @@ class UCT():
                         best_nodes = list()
                         best_nodes.append(subnode)
                         best_ucb = ucb
-                chosen = random.randint(0,len(best_nodes)-1)
-                return UCT.selection(best_nodes[chosen])
 
-    def simulation(node, heurs): 
-        winner = UCT.__play(node.game,heurs)
+                #LGR POLICY
+                if node.game.mov in self.good_replies and len(best_nodes)>1:
+                        good_replies = list()
+                        for node_option in best_nodes:
+                            if self.good_replies[node.game.mov] == node_option.game.mov:
+                                good_replies.append(node_option)
+                        
+                        if not good_replies:
+                            chosen = random.randint(0,len(best_nodes)-1)
+                            return self.selection(best_nodes[chosen])
+                        else:
+                            chosen = random.randint(0,len(good_replies)-1)
+                            return good_replies[chosen]
+                else:
+                    chosen = random.randint(0,len(best_nodes)-1)
+                    return self.selection(best_nodes[chosen])
+
+    def simulation(self, node, heurs): 
+        winner = self.__play(node.game,heurs)
         return winner
 
-    def __play(game, heurs):
+    def __play(self, game, heurs):
         current_game = copy.deepcopy(game)
         turn1 = current_game.next_player
         all_moves = dict()
+        all_moves_repeat = list()
 
+        my_player = self.player
         while(True): 
             if turn1:
                 player_color = 'Black'
@@ -90,28 +124,40 @@ class UCT():
             moves = current_game.generateMoves()
             if not moves:
                 if player_color == 'Black':
+                    if not my_player:
+                        self.__save_good_replies(all_moves_repeat,my_player)
+                    else:
+                        self.__remove_bad_replies(all_moves_repeat,my_player)
                     return 'White'
                 else:
+                    if my_player:
+                        self.__save_good_replies(all_moves_repeat,my_player)
+                    else:
+                        self.__remove_bad_replies(all_moves_repeat,my_player)
                     return 'Black'
             else:
-                if heurs:
-                    chosen = list()
-                    chosen.append(0)
-                    best_heuristic_value = moves[0].heuristic_eval()
-                    for i,game in enumerate(moves[1:]):
-                        new_heurs = game.heuristic_eval()
-                        if new_heurs > best_heuristic_value:
-                            best_heuristic_value = new_heurs
-                            chosen.clear()
-                            chosen.append(i)
-                        elif new_heurs == best_heuristic_value:
-                            chosen.append(i)
-                    index = random.randint(0, len(chosen)-1)
-                    chosen = chosen[index]
+                if heurs and turn1==my_player and len(all_moves_repeat)>0:
+                    if current_game.mov in self.good_replies:
+                        good_reply = self.good_replies[current_game.mov]
+                        
+                        found = False
+                        i=0
+                        while(not found and i < len(moves)):
+                            if moves[i].mov == good_reply:
+                                found = True
+                                chosen = i
+                            else:
+                                i += 1
+                        if not found:
+                            chosen = random.randint(0, len(moves)-1)
+                    else:
+                        chosen = random.randint(0, len(moves)-1)
                 else:
                     chosen = random.randint(0, len(moves)-1)
                 current_game = moves[chosen]
+                chosen = 200000
 
+                all_moves_repeat.append(current_game)
                 #Repeat position
                 if current_game in all_moves:
                     all_moves[current_game] += 1
@@ -120,10 +166,12 @@ class UCT():
 
                 # Draw because of definition 1.32.1
                 if all_moves[current_game] > 2:
+                    self.__save_good_replies(all_moves_repeat,my_player)
                     return 'Draw'
 
                 # Draw because of definition 1.32.2
                 if current_game.cond1 > 40 and current_game.cond2 > 40:
+                    self.__save_good_replies(all_moves_repeat,my_player)
                     return 'Draw'
                 turn1 = current_game.next_player
 
@@ -152,3 +200,39 @@ class UCT():
             exploration  = 2*expl_const*(np.sqrt(inside_square_root))
 
             return (exploitation + exploration)
+
+    def __save_good_replies(self, all_moves, player_color):
+        i = 0
+        if player_color == 'Black':
+            pl = True
+        else:
+            pl = False
+
+        if not all_moves:
+            return
+
+        if not(all_moves[0].next_player) == pl:
+            i = 1
+
+        while(i < len(all_moves)-1):
+            self.good_replies.update({all_moves[i].mov:all_moves[i+1].mov})
+            i += 2
+
+
+    def __remove_bad_replies(self, all_moves, player_color):
+        i = 0
+        if player_color == 'Black':
+            pl = True
+        else:
+            pl = False
+
+        if not all_moves:
+            return
+            
+        if not(all_moves[0].next_player) == pl:
+            i = 1
+
+        while(i < len(all_moves)-1):
+            if all_moves[i].mov in self.good_replies and all_moves[i+1].mov == self.good_replies[all_moves[i].mov]:
+                self.good_replies.pop(all_moves[i].mov)
+            i += 2
