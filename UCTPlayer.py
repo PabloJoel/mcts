@@ -8,7 +8,7 @@ import time
 
 class UCTPlayer(PlayerInterface):
 
-    def __init__(self, player, game, type_game='checkers', iter=100, choose='max_value', heurs=False):
+    def __init__(self, player, game, type_game='checkers', iter=100, choose='max_value', heurs=False, last_good_reply=False):
         self.player = player
         self.iter = iter
         self.choose = choose
@@ -17,6 +17,7 @@ class UCTPlayer(PlayerInterface):
         elif type_game == 'tic':
             self.uct = TicUCT(game)
         self.heurs = heurs
+        self.last_good_reply = last_good_reply
 
     def chooseMove(self, enemy_move):
         """Choosen a move according to the chosen strategy
@@ -39,7 +40,7 @@ class UCTPlayer(PlayerInterface):
                         i += 1
 
         #Iterate
-        self.uct.tree = self.uct.search(self.heurs, self.iter)
+        self.uct.tree = self.uct.search(self.heurs, self.last_good_reply, self.iter)
 
         #Choose new move
         if self.choose == 'max_value':

@@ -14,7 +14,7 @@ class UCT():
         self.tree = BTree(game=game, parent=None)
         self.good_replies = dict()
         
-    def search(self, heurs, max_iter=100):
+    def search(self, heurs, last_good_reply, max_iter=100):
         tree = copy.deepcopy(self.tree)
 
         #Initialize tree
@@ -38,7 +38,7 @@ class UCT():
         iter = 0
         while(iter < max_iter):
             selected_node = self.selection(tree)
-            sim_value = self.simulation(selected_node, heurs)
+            sim_value = self.simulation(selected_node, heurs, last_good_reply)
             UCT.backpropagation(selected_node, sim_value)
             iter += 1
 
@@ -104,11 +104,11 @@ class UCT():
                     chosen = random.randint(0,len(best_nodes)-1)
                     return self.selection(best_nodes[chosen])
 
-    def simulation(self, node, heurs): 
-        winner = self.__play(node.game,heurs)
+    def simulation(self, node, heurs, last_good_reply): 
+        winner = self.__play(node.game,heurs, last_good_reply)
         return winner
 
-    def __play(self, game, heurs):
+    def __play(self, game, heurs, last_good_reply):
         current_game = copy.deepcopy(game)
         turn1 = current_game.next_player
         all_moves = dict()
@@ -136,7 +136,7 @@ class UCT():
                         self.__remove_bad_replies(all_moves_repeat,my_player)
                     return 'Black'
             else:
-                if heurs and turn1==my_player and len(all_moves_repeat)>0:
+                if last_good_reply and turn1==my_player and len(all_moves_repeat)>0:
                     if current_game.mov in self.good_replies:
                         good_reply = self.good_replies[current_game.mov]
                         
@@ -152,6 +152,21 @@ class UCT():
                             chosen = random.randint(0, len(moves)-1)
                     else:
                         chosen = random.randint(0, len(moves)-1)
+                elif heurs:
+                    best_moves = [0]
+                    best_value = moves[0].heuristic_eval()
+                    index = 1
+
+                    for move in moves[1:]:
+                        value = move.heuristic_eval()
+                        if value == best_value:
+                            best_moves.append(index)
+                        elif value > best_value:
+                            best_moves.clear()
+                            best_moves.append(index)
+                        index += 1
+                    
+                    chosen = random.randint(0, len(best_moves)-1)
                 else:
                     chosen = random.randint(0, len(moves)-1)
                 current_game = moves[chosen]

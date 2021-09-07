@@ -105,22 +105,28 @@ white = 0
 black = 0
 draw = 0
 i = 0
-mcts_iter1 = 500
+
+mcts_iter1 = 1000
 heur1 = False
+last_good_reply1 = False
 
 
-mcts_iter2 = 100
-heur2 = True
+mcts_iter2 = 1000
+heur2 = False
+last_good_reply2 = True
 
 
 while(i<100):
-    #player1 = UCTPlayer(player=True,game=CheckersGame(),iter=mcts_iter1,heurs=heur1)
-    player1 = RandomPlayer(show=False)
-    player2 = UCTPlayer(player=False,game=CheckersGame(),iter=mcts_iter2,heurs=heur2)
+    player1 = UCTPlayer(player=True,game=CheckersGame(),iter=mcts_iter1,heurs=heur1,last_good_reply=last_good_reply1)
+    #player1 = RandomPlayer(show=False)
+    player2 = UCTPlayer(player=False,game=CheckersGame(),iter=mcts_iter2,heurs=heur2,last_good_reply=last_good_reply2)
     
     gm = GameModel(CheckersGame())
     winner = gm.play(player1=player1, player2=player2, show=False)
-    print(f'Winner:{winner}, Current game: {i}, MCTS iter1: {mcts_iter1}, Heur1: {heur1}, MCTS iter2: {mcts_iter2}, Heur2: {heur2}')
+    
+    #print(f'Winner:{winner}, Current game: {i}, MCTS iter2: {mcts_iter2}, Heur2: {heur2}, Last Good Reply2: {last_good_reply2}')
+    print(f'Winner:{winner}, Current game: {i}, MCTS iter1: {mcts_iter1}, Heur1: {heur1}, Last Good Reply: {last_good_reply1}, MCTS iter2: {mcts_iter2}, Heur2: {heur2}, Last Good Reply2: {last_good_reply2}')
+    
     if winner == 'Black':
         black += 1
     elif winner == 'White':

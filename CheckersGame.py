@@ -341,11 +341,6 @@ class CheckersGame(GameInterface):
         numb_endangered_pieces = 0
         numb_protected_pieces = 0
 
-        #if self.next_player:
-            #mult = -1
-        #else:
-            #mult = 1
-
         if self.next_player:
             my_pieces = self.white_tiles
             enemy_pieces = self.black_tiles

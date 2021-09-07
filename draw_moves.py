@@ -7,6 +7,8 @@ def draw_moves(screen, screen_size, game, moves):
     yellow_marks = dict()
 
     if moves is not None:
+        rect_moves = dict()
+
         for move in moves:
             if game.next_player:
                 current_tiles = game.black_tiles
@@ -20,11 +22,15 @@ def draw_moves(screen, screen_size, game, moves):
                     col = (tile[1]+1)*(screen_size/10)
                     row = (7-tile[0]+1)*(screen_size/10)
 
-                    mark = create_yellow(screen_size)
-                    rect = screen.blit(mark,(col,row))#col,row
-                    if tuple(rect) in yellow_marks:
-                        yellow_marks[tuple(rect)].append(move)
+                    pos = [col,row]
+                    if tuple(pos) in rect_moves:
+                        yellow_marks[tuple(rect_moves[tuple(pos)])].append(move)
                     else:
+                        mark = create_yellow(screen_size)
+                        rect = screen.blit(mark,(col,row))#col,row
+
+                        rect_moves.update({tuple(pos):rect})
+                        
                         aux = list()
                         aux.append(move)
                         yellow_marks.update({tuple(rect):aux})

@@ -19,7 +19,14 @@ def select_game(screen, screen_size, games):
 
     font_player = pygame.font.Font('IndieFlower.ttf', int(screen_size/30))
     choose_button = bt.Button(' Choose this board  ', screen_size/3.05, screen_size/1.1, screen_size*0.35, screen_size*0.053,font_player,'white',(0,204,102))
-        
+    
+    #Initialize the board with the first move
+    db.draw_board(screen, screen_size, games[0], f'Board {0}')
+    screen.blit(right_arrow,(screen_size/1.12, screen_size/2))
+    screen.blit(left_arrow,(screen_size/90, screen_size/2))
+    choose_button.draw(screen)
+    pygame.display.update()
+
     running = True
     while(running):
         events = pygame.event.get()
