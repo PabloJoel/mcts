@@ -4,7 +4,6 @@ from BTree import BTree
 from PlayerInterface import PlayerInterface
 from UCT import UCT
 from TicUCT import TicUCT
-import time
 
 class UCTPlayer(PlayerInterface):
 
@@ -22,7 +21,7 @@ class UCTPlayer(PlayerInterface):
     def chooseMove(self, enemy_move):
         """Choosen a move according to the chosen strategy
         """
-        start = time.time()
+        
 
         #Update according to the enemy move
         if not(enemy_move.same_board(self.uct.tree.game)):
@@ -72,9 +71,6 @@ class UCTPlayer(PlayerInterface):
         chosen = random.randint(0,len(best_nodes)-1)
         self.uct.tree = best_nodes[chosen]
         self.uct.tree.parent = None
-
-        end = time.time()
-        print(f'Tiempo: {end - start}')
 
         return self.uct.tree.game
         

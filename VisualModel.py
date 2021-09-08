@@ -5,7 +5,7 @@ import draw_game as dg
 import UCTPlayer as up
 import HumanPlayer as hp
 
-def play(screen, screen_size, game, player1, player2):
+def play(screen, screen_size, game, player1, player2, data1_on, data2_on):
     """ Play the game
     """
     pygame.init()
@@ -37,10 +37,16 @@ def play(screen, screen_size, game, player1, player2):
             msg = f'{next_player_color} has won'
             dg.draw_game(screen, screen_size, current_game, msg) 
         else:
+            start = time.time()
+
             if (turn1 and isinstance(player1, hp.HumanPlayer)) or (not turn1 and isinstance(player2, hp.HumanPlayer)):
                 chosen = dg.draw_game(screen, screen_size, game=current_game, moves=moves)
+                
+                end = time.time()
+                dif = end-start
+                print_data(turn1, data1_on, data2_on, dif, player1, player2)
             else:
-                start = time.time()
+                
                 if turn1:
                     if isinstance(player1, up.UCTPlayer):
                         chosen = player1.chooseMove(current_game)
@@ -51,8 +57,12 @@ def play(screen, screen_size, game, player1, player2):
                         chosen = player2.chooseMove(current_game)
                     elif not isinstance(player2, hp.HumanPlayer):
                         chosen = player2.chooseMove(moves)
+                
                 end = time.time()
                 dif = end-start
+
+                print_data(turn1, data1_on, data2_on, dif, player1, player2)
+
                 if dif < 1:
                     time.sleep(1-dif)
 
@@ -76,5 +86,16 @@ def play(screen, screen_size, game, player1, player2):
             dg.draw_game(screen, screen_size, game=current_game, msg=msg)
             turn1 = current_game.next_player
     time.sleep(3)
-    
 
+
+def print_data(turn1, data1_on, data2_on, time, player1, player2):
+    if (turn1 and data1_on) or ( (not turn1) and data2_on):
+        if turn1:
+            print(f'Black player time: {time}')
+        else:
+            print(f'White player time: {time}')
+
+        if (turn1 and isinstance(player1, up.UCTPlayer)):
+            player1.uct.tree.pprint_tree()
+        elif ( (not turn1) and isinstance(player2, up.UCTPlayer)):
+            player2.uct.tree.pprint_tree()

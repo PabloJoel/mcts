@@ -23,7 +23,7 @@ while running:
     if isinstance(res, str):
         running = False
     elif isinstance(res, tuple):
-        VisualModel.play(screen, size_screen, cg.CheckersGame(), res[0], res[1])
+        VisualModel.play(screen, size_screen, cg.CheckersGame(), res[0], res[1], res[2], res[3])
 
 pygame.quit()
 quit()
