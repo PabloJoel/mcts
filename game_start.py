@@ -1,7 +1,11 @@
 import pygame
-import CheckersGame as cg
-from MainMenu import menu
-import VisualModel
+
+import sys
+sys.path.append("..")
+
+import games.CheckersGame as cg
+from visual.MainMenu import menu
+import visual.VisualModel as vm
 
 pygame.init()
 pygame.font.init()
@@ -19,11 +23,14 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+    #Menu to select type of players
     res = menu(screen, size_screen)
+
     if isinstance(res, str):
         running = False
     elif isinstance(res, tuple):
-        VisualModel.play(screen, size_screen, cg.CheckersGame(), res[0], res[1], res[2], res[3])
+        #Play the game
+        vm.play(screen, size_screen, cg.CheckersGame(), res[0], res[1], res[2], res[3])
 
 pygame.quit()
 quit()

@@ -1,11 +1,14 @@
-import GameModel as gm
+import sys
+sys.path.append("..")
+
+import visual.GameModel as gm
 
 #Game
-from CheckersGame import CheckersGame
+from games.CheckersGame import CheckersGame
 
 #import players
-from RandomPlayer import RandomPlayer
-from UCTPlayer import UCTPlayer
+from players.RandomPlayer import RandomPlayer
+from players.UCTPlayer import UCTPlayer
 
 white = 0
 black = 0
@@ -17,21 +20,21 @@ heur1 = False
 last_good_reply1 = False
 
 
-mcts_iter2 = 1000
-heur2 = False
-last_good_reply2 = True
+mcts_iter2 = 300
+heur2 = True
+last_good_reply2 = False
 
 
 while(i<100):
-    player1 = UCTPlayer(player=True,game=CheckersGame(),iter=mcts_iter1,heurs=heur1,last_good_reply=last_good_reply1)
-    #player1 = RandomPlayer(show=False)
+    #player1 = UCTPlayer(player=True,game=CheckersGame(),iter=mcts_iter1,heurs=heur1,last_good_reply=last_good_reply1)
+    player1 = RandomPlayer(show=False)
     player2 = UCTPlayer(player=False,game=CheckersGame(),iter=mcts_iter2,heurs=heur2,last_good_reply=last_good_reply2)
     
     model = gm.GameModel(CheckersGame())
     winner = model.play(player1=player1, player2=player2, show=False)
     
-    #print(f'Winner:{winner}, Current game: {i}, MCTS iter2: {mcts_iter2}, Heur2: {heur2}, Last Good Reply2: {last_good_reply2}')
-    print(f'Winner:{winner}, Current game: {i}, MCTS iter1: {mcts_iter1}, Heur1: {heur1}, Last Good Reply: {last_good_reply1}, MCTS iter2: {mcts_iter2}, Heur2: {heur2}, Last Good Reply2: {last_good_reply2}')
+    print(f'Winner:{winner}, Current game: {i}, MCTS iter2: {mcts_iter2}, Heur2: {heur2}, Last Good Reply2: {last_good_reply2}')
+    #print(f'Winner:{winner}, Current game: {i}, MCTS iter1: {mcts_iter1}, Heur1: {heur1}, Last Good Reply: {last_good_reply1}, MCTS iter2: {mcts_iter2}, Heur2: {heur2}, Last Good Reply2: {last_good_reply2}')
     
     if winner == 'Black':
         black += 1

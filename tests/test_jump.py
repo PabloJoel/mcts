@@ -1,4 +1,4 @@
-from CheckersGame import CheckersGame
+from games.CheckersGame import CheckersGame
 import numpy as np
 
 def test_jump1():
