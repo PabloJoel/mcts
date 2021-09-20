@@ -425,8 +425,7 @@ class CheckersGame():
         eval = (5*(numb_pawns) + 7.75*(numb_queens) + 4*(numb_pieces_back)
                 + 2.5*(numb_pieces_middle_rows_cols) + 0.5*(numb_pieces_middle_rows) 
                 - 3*(numb_endangered_pieces) + 3*(numb_protected_pieces))
-        #print(f'Turn:{self.next_player}, Pawns:{numb_pawns}, Queens:{numb_queens}, Back:{numb_pieces_back}, Great_middle:{numb_pieces_middle_rows_cols}, Lesser_middle:{numb_pieces_middle_rows}, Dangered:{numb_endangered_pieces}, Secured:{numb_protected_pieces}, Total:{eval}')
-        #mult *= -1
+
         return eval
             
     def __endangered_piece(enemy, enemy_pieces, my_pieces):

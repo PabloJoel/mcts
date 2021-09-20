@@ -35,11 +35,11 @@ def menu(screen, size_screen):
     #Option Box to select a player
     list1 = OptionBox(size_screen/2, size_screen/2.6, size_screen*0.22, size_screen*0.053, 
         (255, 255, 255), (172, 232, 242), (77, 106, 149), 
-        font_box, ["Human Player", "Random Player", "MCTS Player"])
+        font_box, ["Human Player", "Random Player", "UCT Player"])
 
     list2 = OptionBox(size_screen/2, size_screen/1.69, size_screen*0.22, size_screen*0.053, 
         (255, 255, 255), (172, 232, 242), (77, 106, 149), 
-        font_box, ["Human Player", "Random Player", "MCTS Player"])
+        font_box, ["Human Player", "Random Player", "UCT Player"])
 
     #Modifications for MCTS
     mods1 = OptionBox(size_screen/1.4, size_screen/2, size_screen*0.15, size_screen*0.053, 
