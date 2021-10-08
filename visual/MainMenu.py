@@ -177,11 +177,11 @@ def create_player(player1, iter1, mod1, data1_on, player2, iter2, mod2, data2_on
             pl1 = rp.RandomPlayer(show=False)
         elif player1 == 2:
             if mod1 == 0:
-                pl1 = up.UCTPlayer(player=True, game=cg.CheckersGame(), type_game='checkers', iter=iter1)
+                pl1 = up.UCTPlayer(game=cg.CheckersGame(), iter=iter1)
             elif mod1 == 1:
-                pl1 = up.UCTPlayer(player=True, game=cg.CheckersGame(), type_game='checkers', iter=iter1, heurs=True)
+                pl1 = up.UCTPlayer(game=cg.CheckersGame(), iter=iter1, heurs=True)
             elif mod1 == 2:
-                pl1 = up.UCTPlayer(player=True, game=cg.CheckersGame(), type_game='checkers', iter=iter1, last_good_reply=True)
+                pl1 = up.UCTPlayer(game=cg.CheckersGame(), iter=iter1, last_good_reply=True)
         
         if player2 == 0:
             pl2 = hp.HumanPlayer()
@@ -189,10 +189,10 @@ def create_player(player1, iter1, mod1, data1_on, player2, iter2, mod2, data2_on
             pl2 = rp.RandomPlayer(show=False)
         elif player2 == 2:
             if mod2 == 0:
-                pl2 = up.UCTPlayer(player=False, game=cg.CheckersGame(), type_game='checkers', iter=iter2)
+                pl2 = up.UCTPlayer(game=cg.CheckersGame(), iter=iter2)
             elif mod2 == 1:
-                pl2 = up.UCTPlayer(player=False, game=cg.CheckersGame(), type_game='checkers', iter=iter2, heurs=True)
+                pl2 = up.UCTPlayer(game=cg.CheckersGame(), iter=iter2, heurs=True)
             elif mod2 == 2:
-                pl2 = up.UCTPlayer(player=False, game=cg.CheckersGame(), type_game='checkers', iter=iter2, last_good_reply=True)
+                pl2 = up.UCTPlayer(game=cg.CheckersGame(), iter=iter2, last_good_reply=True)
         
         return (pl1,pl2,data1_on,data2_on)
