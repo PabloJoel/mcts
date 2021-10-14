@@ -11,32 +11,38 @@ from players.BTree import BTree
 
 class UCT():
 
-    def __init__(self, game, player):
-        self.player = player
+    def __init__(self, game):
         self.tree = BTree(game=game, parent=None)
+        
+        #Last Good Reply
         self.good_replies = dict()
         
     def search(self, heurs, last_good_reply, max_iter=100):
         tree = copy.deepcopy(self.tree)
 
+        """
         #Initialize tree
         movs = tree.game.generateMoves()
         for new_game in movs:
             tree.nodes.append(BTree(game=new_game, parent=tree))
-
+        """
+        movs = tree.game.generateMoves()
         #Only 1 move possible
         if len(movs)==1:
+            tree.nodes.append(BTree(game=movs[0], parent=tree))
             return tree
 
-        for node in tree.nodes:
-            finish, winner = node.game.is_finished()
+        #Check if there is a winning
+        for mov in movs:
+            finish, winner = mov.is_finished()
             if finish and winner == tree.game.next_player: #Winning move
+                tree.nodes.append(BTree(game=mov, parent=tree))
+                """
                 new_nodes = list()
                 new_nodes.append(node)
                 tree.nodes = new_nodes
+                """
                 return tree
-            elif finish and winner != 0: #Losing move
-                node.value = float('-inf')
 
         iter = 0
         while(iter < max_iter):
@@ -117,7 +123,9 @@ class UCT():
         all_moves = dict()
         all_moves_repeat = list()
 
-        my_player = self.player
+        #my_player = self.tree.game
+        my_player = self.tree.game.next_player
+
         while(True): 
             if turn1:
                 player_color = 'Black'

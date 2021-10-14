@@ -10,14 +10,12 @@ from players.TicUCT import TicUCT
 
 class UCTPlayer(PlayerInterface):
 
-    def __init__(self, player, game, type_game='checkers', iter=100, choose='max_value', heurs=False, last_good_reply=False):
-        self.player = player
+    def __init__(self, game, iter=100, choose='max_value', heurs=False, last_good_reply=False):
         self.iter = iter
         self.choose = choose
-        if type_game == 'checkers':
-            self.uct = UCT(game,player)
-        elif type_game == 'tic':
-            self.uct = TicUCT(game)
+
+        self.uct = UCT(game)
+        
         self.heurs = heurs
         self.last_good_reply = last_good_reply
 
