@@ -26,14 +26,14 @@ class UCTPlayer(PlayerInterface):
         """
         
         #Update according to the enemy move
-        if not(enemy_move.same_board(self.uct.tree.game)):
+        if not(enemy_move.same_game_state(self.uct.tree.game)):
             if not self.uct.tree.nodes:
                 self.uct.tree = BTree(game=enemy_move, parent=None)
             else:
                 find = False
                 i = 0
                 while(not find):
-                    if (enemy_move.same_board(self.uct.tree.nodes[i].game)):
+                    if (enemy_move.same_game_state(self.uct.tree.nodes[i].game)):
                         self.uct.tree = self.uct.tree.nodes[i]
                         self.uct.tree.parent = None
                         find = True
